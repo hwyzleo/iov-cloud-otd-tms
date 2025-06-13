@@ -49,7 +49,7 @@ public class LogisticsNodeTypePo extends BasePo {
      * 是否启用
      */
     @TableField("enable")
-    private Byte enable;
+    private Boolean enable;
 
     /**
      * 排序

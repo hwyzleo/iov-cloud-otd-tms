@@ -35,7 +35,7 @@ public class LogisticsNodeTypeMpt extends BaseRequest {
     /**
      * 是否启用
      */
-    private Byte enable;
+    private Boolean enable;
 
     /**
      * 排序
