@@ -52,6 +52,20 @@ public class LogisticsNodeTypeMptController extends BaseController implements Lo
     }
 
     /**
+     * 查询所有物流据点类型
+     *
+     * @return 物流据点类型列表
+     */
+    @RequiresPermissions("completeVehicle:transport:logisticsNodeType:list")
+    @Override
+    @GetMapping(value = "/listAll")
+    public List<LogisticsNodeTypeMpt> listAll() {
+        logger.info("管理后台用户[{}]查询所有物流据点类型", SecurityUtils.getUsername());
+        List<LogisticsNodeTypePo> logisticsNodeTypePoList = logisticsNodeTypeAppService.search(null, null, null, null);
+        return LogisticsNodeTypeMptAssembler.INSTANCE.fromPoList(logisticsNodeTypePoList);
+    }
+
+    /**
      * 导出物流据点类型
      *
      * @param response          响应

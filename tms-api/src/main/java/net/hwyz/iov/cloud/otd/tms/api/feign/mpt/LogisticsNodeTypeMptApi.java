@@ -5,6 +5,8 @@ import net.hwyz.iov.cloud.framework.common.web.domain.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.web.page.TableDataInfo;
 import net.hwyz.iov.cloud.otd.tms.api.contract.LogisticsNodeTypeMpt;
 
+import java.util.List;
+
 /**
  * 物流据点类型相关管理后台接口
  *
@@ -19,6 +21,13 @@ public interface LogisticsNodeTypeMptApi {
      * @return 物流据点类型列表
      */
     TableDataInfo list(LogisticsNodeTypeMpt logisticsNodeType);
+
+    /**
+     * 查询所有物流据点类型
+     *
+     * @return 物流据点类型列表
+     */
+    List<LogisticsNodeTypeMpt> listAll();
 
     /**
      * 导出物流据点类型
