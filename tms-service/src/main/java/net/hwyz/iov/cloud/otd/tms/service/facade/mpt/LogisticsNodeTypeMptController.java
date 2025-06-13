@@ -47,21 +47,21 @@ public class LogisticsNodeTypeMptController extends BaseController implements Lo
         startPage();
         List<LogisticsNodeTypePo> logisticsNodeTypePoList = logisticsNodeTypeAppService.search(logisticsNodeType.getCode(),
                 logisticsNodeType.getName(), getBeginTime(logisticsNodeType), getEndTime(logisticsNodeType));
-        List<LogisticsNodeTypeMpt> brandMptList = LogisticsNodeTypeMptAssembler.INSTANCE.fromPoList(logisticsNodeTypePoList);
-        return getDataTable(logisticsNodeTypePoList, brandMptList);
+        List<LogisticsNodeTypeMpt> logisticsNodeTypeMptList = LogisticsNodeTypeMptAssembler.INSTANCE.fromPoList(logisticsNodeTypePoList);
+        return getDataTable(logisticsNodeTypePoList, logisticsNodeTypeMptList);
     }
 
     /**
      * 导出物流据点类型
      *
-     * @param response 响应
-     * @param brand    物流据点类型
+     * @param response          响应
+     * @param logisticsNodeType 物流据点类型
      */
     @Log(title = "物流据点类型管理", businessType = BusinessType.EXPORT)
     @RequiresPermissions("completeVehicle:transport:logisticsNodeType:export")
     @Override
     @PostMapping("/export")
-    public void export(HttpServletResponse response, LogisticsNodeTypeMpt brand) {
+    public void export(HttpServletResponse response, LogisticsNodeTypeMpt logisticsNodeType) {
         logger.info("管理后台用户[{}]导出物流据点类型", SecurityUtils.getUsername());
     }
 

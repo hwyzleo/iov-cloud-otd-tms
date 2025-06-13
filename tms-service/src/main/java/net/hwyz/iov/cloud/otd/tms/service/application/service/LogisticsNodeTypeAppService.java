@@ -69,10 +69,10 @@ public class LogisticsNodeTypeAppService {
     }
 
     /**
-     * 根据车辆品牌代码获取车辆品牌信息
+     * 根据物流据点类型代码获取物流据点类型信息
      *
-     * @param code 车辆品牌代码
-     * @return 车辆品牌信息
+     * @param code 物流据点类型代码
+     * @return 物流据点类型信息
      */
     public LogisticsNodeTypePo getLogisticsNodeTypeByCode(String code) {
         return logisticsNodeTypeDao.selectPoByCode(code);
