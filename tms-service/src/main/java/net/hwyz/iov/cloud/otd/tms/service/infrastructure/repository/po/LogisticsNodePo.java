@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import net.hwyz.iov.cloud.framework.mysql.po.BasePo;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import net.hwyz.iov.cloud.framework.mysql.po.BasePo;
 
 /**
  * <p>
@@ -91,7 +93,7 @@ public class LogisticsNodePo extends BasePo {
      * 是否启用
      */
     @TableField("enable")
-    private Byte enable;
+    private Boolean enable;
 
     /**
      * 排序
