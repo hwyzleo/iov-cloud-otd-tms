@@ -91,7 +91,7 @@ public class TransportTypeAppService {
     /**
      * 修改运输方式
      *
-     * @param transportTypePo 物流据点类型
+     * @param transportTypePo 运输方式
      * @return 结果
      */
     public int modifyTransportType(TransportTypePo transportTypePo) {
