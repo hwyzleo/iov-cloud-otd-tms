@@ -46,16 +46,16 @@ public class LogisticsNodeTypeAppService {
     /**
      * 检查物流据点类型代码是否唯一
      *
-     * @param logisticsNodeId 物流据点类型ID
-     * @param code            物流据点类型代码
+     * @param logisticsNodeTypeId 物流据点类型ID
+     * @param code                物流据点类型代码
      * @return 结果
      */
-    public Boolean checkCodeUnique(Long logisticsNodeId, String code) {
-        if (ObjUtil.isNull(logisticsNodeId)) {
-            logisticsNodeId = -1L;
+    public Boolean checkCodeUnique(Long logisticsNodeTypeId, String code) {
+        if (ObjUtil.isNull(logisticsNodeTypeId)) {
+            logisticsNodeTypeId = -1L;
         }
         LogisticsNodeTypePo logisticsNodeTypePo = getLogisticsNodeTypeByCode(code);
-        return !ObjUtil.isNotNull(logisticsNodeTypePo) || logisticsNodeTypePo.getId().longValue() == logisticsNodeId.longValue();
+        return !ObjUtil.isNotNull(logisticsNodeTypePo) || logisticsNodeTypePo.getId().longValue() == logisticsNodeTypeId.longValue();
     }
 
     /**
