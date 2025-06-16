@@ -15,8 +15,8 @@ public interface DriverMptApi {
     /**
      * 分页查询驾驶员
      *
-     * @param driver 承运商
-     * @return 承运商列表
+     * @param driver 驾驶员
+     * @return 驾驶员列表
      */
     TableDataInfo list(DriverMpt driver);
 

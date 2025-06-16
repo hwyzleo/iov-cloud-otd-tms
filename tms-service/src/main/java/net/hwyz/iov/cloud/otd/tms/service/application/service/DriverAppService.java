@@ -74,7 +74,7 @@ public class DriverAppService {
      * 根据身份证号获取驾驶员
      *
      * @param idNumber 身份证号
-     * @return 承运商
+     * @return 驾驶员
      */
     public DriverPo getDriverByIdNumber(String idNumber) {
         return driverDao.selectPoByIdNumber(idNumber);
