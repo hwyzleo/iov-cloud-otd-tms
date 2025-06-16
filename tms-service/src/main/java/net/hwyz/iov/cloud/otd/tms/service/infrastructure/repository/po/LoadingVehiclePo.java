@@ -55,7 +55,7 @@ public class LoadingVehiclePo extends BasePo {
      * 最大装载数
      */
     @TableField("max_loading_capacity")
-    private Short maxLoadingCapacity;
+    private Integer maxLoadingCapacity;
 
     /**
      * 行驶证号

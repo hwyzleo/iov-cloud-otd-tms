@@ -40,7 +40,7 @@ public class LoadingVehicleMpt extends BaseRequest {
     /**
      * 最大装载数
      */
-    private Short maxLoadingCapacity;
+    private Integer maxLoadingCapacity;
 
     /**
      * 行驶证号
