@@ -23,12 +23,4 @@ public interface CarrierDao extends BaseDao<CarrierPo, Long> {
      */
     CarrierPo selectPoByCode(String code);
 
-    /**
-     * 批量物理删除承运商
-     *
-     * @param ids 承运商id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
-
 }

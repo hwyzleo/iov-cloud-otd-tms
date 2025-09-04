@@ -23,12 +23,4 @@ public interface TransportTypeDao extends BaseDao<TransportTypePo, Long> {
      */
     TransportTypePo selectPoByCode(String code);
 
-    /**
-     * 批量物理删除运输方式
-     *
-     * @param ids 运输方式id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
-
 }

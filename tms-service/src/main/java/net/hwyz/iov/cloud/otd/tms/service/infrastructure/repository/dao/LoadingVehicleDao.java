@@ -23,12 +23,4 @@ public interface LoadingVehicleDao extends BaseDao<LoadingVehiclePo, Long> {
      */
     LoadingVehiclePo selectPoByVehicleRegistrationNumber(String vehicleRegistrationNumber);
 
-    /**
-     * 批量物理删除装载车
-     *
-     * @param ids 装载车id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
-
 }

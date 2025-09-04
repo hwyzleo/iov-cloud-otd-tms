@@ -23,12 +23,4 @@ public interface LogisticsNodeDao extends BaseDao<LogisticsNodePo, Long> {
      */
     LogisticsNodePo selectPoByCode(String code);
 
-    /**
-     * 批量物理删除物流据点信息
-     *
-     * @param ids 物流据点id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
-
 }

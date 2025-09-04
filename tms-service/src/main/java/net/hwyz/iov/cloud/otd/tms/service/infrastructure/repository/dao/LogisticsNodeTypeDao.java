@@ -1,7 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.dao;
 
-import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.LogisticsNodeTypePo;
 import net.hwyz.iov.cloud.framework.mysql.dao.BaseDao;
+import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.LogisticsNodeTypePo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -22,13 +22,5 @@ public interface LogisticsNodeTypeDao extends BaseDao<LogisticsNodeTypePo, Long>
      * @return 物流据点类型
      */
     LogisticsNodeTypePo selectPoByCode(String code);
-
-    /**
-     * 批量物理删除物流据点类型
-     *
-     * @param ids 物流据点类型id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
 
 }

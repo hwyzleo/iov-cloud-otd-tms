@@ -1,8 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.dao;
 
-import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TransportRoutePo;
 import net.hwyz.iov.cloud.framework.mysql.dao.BaseDao;
-import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TransportTypePo;
+import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TransportRoutePo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -23,13 +22,5 @@ public interface TransportRouteDao extends BaseDao<TransportRoutePo, Long> {
      * @return 运输线路
      */
     TransportRoutePo selectPoByCode(String code);
-
-    /**
-     * 批量物理删除运输线路
-     *
-     * @param ids 运输线路id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
 
 }

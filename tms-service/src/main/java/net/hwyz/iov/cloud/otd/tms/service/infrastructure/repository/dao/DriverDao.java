@@ -23,12 +23,4 @@ public interface DriverDao extends BaseDao<DriverPo, Long> {
      */
     DriverPo selectPoByIdNumber(String idNumber);
 
-    /**
-     * 批量物理删除驾驶员
-     *
-     * @param ids 驾驶员id数组
-     * @return 影响行数
-     */
-    int batchPhysicalDeletePo(Long[] ids);
-
 }
