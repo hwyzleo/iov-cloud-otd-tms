@@ -8,6 +8,7 @@ import net.hwyz.iov.cloud.framework.audit.enums.BusinessType;
 import net.hwyz.iov.cloud.framework.web.controller.BaseController;
 import net.hwyz.iov.cloud.framework.web.util.PageUtil;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.framework.security.annotation.RequiresPermissions;
 import net.hwyz.iov.cloud.framework.security.util.SecurityUtils;
@@ -43,12 +44,12 @@ public class CarrierMptController extends BaseController implements CarrierMptAp
     @RequiresPermissions("completeVehicle:transport:carrier:list")
     @Override
     @GetMapping(value = "/list")
-    public PageResult<CarrierMpt> list(CarrierMpt carrier) {
+    public ApiResponse<PageResult<CarrierMpt>> list(CarrierMpt carrier) {
         log.info("管理后台用户[{}]分页查询承运商", SecurityUtils.getUsername());
         startPage();
         List<CarrierPo> carrierPoList = carrierAppService.search(carrier.getCode(), carrier.getName(),
                 getBeginTime(carrier), getEndTime(carrier));
-        return getPageResult(PageUtil.convert(carrierPoList, CarrierMptAssembler.INSTANCE::fromPo));
+        return ApiResponse.ok(getPageResult(PageUtil.convert(carrierPoList, CarrierMptAssembler.INSTANCE::fromPo)));
     }
 
     /**

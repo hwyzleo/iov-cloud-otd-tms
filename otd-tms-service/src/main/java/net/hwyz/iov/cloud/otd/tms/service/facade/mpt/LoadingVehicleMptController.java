@@ -8,6 +8,7 @@ import net.hwyz.iov.cloud.framework.audit.enums.BusinessType;
 import net.hwyz.iov.cloud.framework.web.controller.BaseController;
 import net.hwyz.iov.cloud.framework.web.util.PageUtil;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.framework.security.annotation.RequiresPermissions;
 import net.hwyz.iov.cloud.framework.security.util.SecurityUtils;
@@ -43,12 +44,12 @@ public class LoadingVehicleMptController extends BaseController implements Loadi
     @RequiresPermissions("completeVehicle:transport:loadVehicle:list")
     @Override
     @GetMapping(value = "/list")
-    public PageResult<LoadingVehicleMpt> list(LoadingVehicleMpt loadVehicle) {
+    public ApiResponse<PageResult<LoadingVehicleMpt>> list(LoadingVehicleMpt loadVehicle) {
         log.info("管理后台用户[{}]分页查询装载车", SecurityUtils.getUsername());
         startPage();
         List<LoadingVehiclePo> loadVehiclePoList = loadingVehicleAppService.search(loadVehicle.getCarrierCode(), loadVehicle.getLicensePlate(),
                 loadVehicle.getVehicleRegistrationNumber(), getBeginTime(loadVehicle), getEndTime(loadVehicle));
-        return getPageResult(PageUtil.convert(loadVehiclePoList, LoadingVehicleMptAssembler.INSTANCE::fromPo));
+        return ApiResponse.ok(getPageResult(PageUtil.convert(loadVehiclePoList, LoadingVehicleMptAssembler.INSTANCE::fromPo)));
     }
 
     /**

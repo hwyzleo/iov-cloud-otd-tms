@@ -8,6 +8,7 @@ import net.hwyz.iov.cloud.framework.audit.enums.BusinessType;
 import net.hwyz.iov.cloud.framework.web.controller.BaseController;
 import net.hwyz.iov.cloud.framework.web.util.PageUtil;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.framework.security.annotation.RequiresPermissions;
 import net.hwyz.iov.cloud.framework.security.util.SecurityUtils;
@@ -43,12 +44,12 @@ public class LogisticsNodeTypeMptController extends BaseController implements Lo
     @RequiresPermissions("completeVehicle:transport:logisticsNodeType:list")
     @Override
     @GetMapping(value = "/list")
-    public PageResult<LogisticsNodeTypeMpt> list(LogisticsNodeTypeMpt logisticsNodeType) {
+    public ApiResponse<PageResult<LogisticsNodeTypeMpt>> list(LogisticsNodeTypeMpt logisticsNodeType) {
         log.info("管理后台用户[{}]分页查询物流据点类型", SecurityUtils.getUsername());
         startPage();
         List<LogisticsNodeTypePo> logisticsNodeTypePoList = logisticsNodeTypeAppService.search(logisticsNodeType.getCode(),
                 logisticsNodeType.getName(), getBeginTime(logisticsNodeType), getEndTime(logisticsNodeType));
-        return getPageResult(PageUtil.convert(logisticsNodeTypePoList, LogisticsNodeTypeMptAssembler.INSTANCE::fromPo));
+        return ApiResponse.ok(getPageResult(PageUtil.convert(logisticsNodeTypePoList, LogisticsNodeTypeMptAssembler.INSTANCE::fromPo)));
     }
 
     /**

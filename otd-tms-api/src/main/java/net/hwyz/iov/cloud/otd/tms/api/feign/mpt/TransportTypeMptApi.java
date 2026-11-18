@@ -1,6 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
 import jakarta.servlet.http.HttpServletResponse;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportTypeMpt;
@@ -20,7 +21,7 @@ public interface TransportTypeMptApi {
      * @param transportType 运输方式
      * @return 运输方式列表
      */
-    PageResult<TransportTypeMpt> list(TransportTypeMpt transportType);
+    ApiResponse<PageResult<TransportTypeMpt>> list(TransportTypeMpt transportType);
 
     /**
      * 查询所有运输方式

@@ -1,6 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
 import jakarta.servlet.http.HttpServletResponse;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportRouteMpt;
@@ -18,7 +19,7 @@ public interface TransportRouteMptApi {
      * @param transportRoute 运输线路
      * @return 运输线路列表
      */
-    PageResult<TransportRouteMpt> list(TransportRouteMpt transportRoute);
+    ApiResponse<PageResult<TransportRouteMpt>> list(TransportRouteMpt transportRoute);
 
     /**
      * 导出运输线路

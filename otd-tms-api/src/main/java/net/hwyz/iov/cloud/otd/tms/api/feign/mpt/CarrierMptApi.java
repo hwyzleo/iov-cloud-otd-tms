@@ -1,6 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
 import jakarta.servlet.http.HttpServletResponse;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.CarrierMpt;
@@ -20,7 +21,7 @@ public interface CarrierMptApi {
      * @param carrier 承运商
      * @return 承运商列表
      */
-    PageResult<CarrierMpt> list(CarrierMpt carrier);
+    ApiResponse<PageResult<CarrierMpt>> list(CarrierMpt carrier);
 
     /**
      * 查询所有承运商

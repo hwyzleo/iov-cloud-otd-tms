@@ -1,5 +1,6 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportOrderActionMpt;
@@ -18,7 +19,7 @@ public interface TransportOrderMptApi {
      * @param transportOrder 运输单查询条件
      * @return 运输单列表
      */
-    PageResult<TransportOrderMpt> list(TransportOrderMpt transportOrder);
+    ApiResponse<PageResult<TransportOrderMpt>> list(TransportOrderMpt transportOrder);
 
     /**
      * 根据运输单号获取运输单（含 VIN 明细）

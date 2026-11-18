@@ -1,6 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
 import jakarta.servlet.http.HttpServletResponse;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.DriverMpt;
@@ -18,7 +19,7 @@ public interface DriverMptApi {
      * @param driver 驾驶员
      * @return 驾驶员列表
      */
-    PageResult<DriverMpt> list(DriverMpt driver);
+    ApiResponse<PageResult<DriverMpt>> list(DriverMpt driver);
 
     /**
      * 导出驾驶员

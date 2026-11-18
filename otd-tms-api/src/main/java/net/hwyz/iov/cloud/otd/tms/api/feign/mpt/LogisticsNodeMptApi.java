@@ -1,6 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
 import jakarta.servlet.http.HttpServletResponse;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.LogisticsNodeMpt;
@@ -18,7 +19,7 @@ public interface LogisticsNodeMptApi {
      * @param logisticsNode 物流据点信息
      * @return 物流据点信息列表
      */
-    PageResult<LogisticsNodeMpt> list(LogisticsNodeMpt logisticsNode);
+    ApiResponse<PageResult<LogisticsNodeMpt>> list(LogisticsNodeMpt logisticsNode);
 
     /**
      * 导出物流据点信息

@@ -1,6 +1,7 @@
 package net.hwyz.iov.cloud.otd.tms.api.feign.mpt;
 
 import jakarta.servlet.http.HttpServletResponse;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.otd.tms.api.contract.LoadingVehicleMpt;
@@ -18,7 +19,7 @@ public interface LoadingVehicleMptApi {
      * @param loadingVehicle 装载车
      * @return 装载车列表
      */
-    PageResult<LoadingVehicleMpt> list(LoadingVehicleMpt loadingVehicle);
+    ApiResponse<PageResult<LoadingVehicleMpt>> list(LoadingVehicleMpt loadingVehicle);
 
     /**
      * 导出装载车

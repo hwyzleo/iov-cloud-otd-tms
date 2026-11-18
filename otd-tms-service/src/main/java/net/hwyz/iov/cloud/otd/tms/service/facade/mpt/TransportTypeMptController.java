@@ -8,6 +8,7 @@ import net.hwyz.iov.cloud.framework.audit.enums.BusinessType;
 import net.hwyz.iov.cloud.framework.web.controller.BaseController;
 import net.hwyz.iov.cloud.framework.web.util.PageUtil;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.framework.security.annotation.RequiresPermissions;
 import net.hwyz.iov.cloud.framework.security.util.SecurityUtils;
@@ -43,12 +44,12 @@ public class TransportTypeMptController extends BaseController implements Transp
     @RequiresPermissions("completeVehicle:transport:transportType:list")
     @Override
     @GetMapping(value = "/list")
-    public PageResult<TransportTypeMpt> list(TransportTypeMpt transportType) {
+    public ApiResponse<PageResult<TransportTypeMpt>> list(TransportTypeMpt transportType) {
         log.info("管理后台用户[{}]分页查询运输方式", SecurityUtils.getUsername());
         startPage();
         List<TransportTypePo> transportTypePoList = transportTypeAppService.search(transportType.getCode(),
                 transportType.getName(), getBeginTime(transportType), getEndTime(transportType));
-        return getPageResult(PageUtil.convert(transportTypePoList, TransportTypeMptAssembler.INSTANCE::fromPo));
+        return ApiResponse.ok(getPageResult(PageUtil.convert(transportTypePoList, TransportTypeMptAssembler.INSTANCE::fromPo)));
     }
 
     /**

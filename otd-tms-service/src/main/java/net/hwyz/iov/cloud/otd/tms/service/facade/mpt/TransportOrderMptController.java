@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.hwyz.iov.cloud.framework.audit.annotation.Log;
 import net.hwyz.iov.cloud.framework.audit.enums.BusinessType;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
+import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
 import net.hwyz.iov.cloud.framework.security.annotation.RequiresPermissions;
 import net.hwyz.iov.cloud.framework.security.util.SecurityUtils;
@@ -43,7 +44,7 @@ public class TransportOrderMptController extends BaseController implements Trans
     @RequiresPermissions("completeVehicle:transport:transportOrder:list")
     @Override
     @GetMapping(value = "/list")
-    public PageResult<TransportOrderMpt> list(TransportOrderMpt transportOrder) {
+    public ApiResponse<PageResult<TransportOrderMpt>> list(TransportOrderMpt transportOrder) {
         log.info("管理后台用户[{}]分页查询运输单", SecurityUtils.getUsername());
         startPage();
         List<TransportOrder> orders = transportOrderAppService.search(
@@ -52,7 +53,7 @@ public class TransportOrderMptController extends BaseController implements Trans
                 transportOrder.getCarrierCode(),
                 transportOrder.getDispatchLogisticsNodeCode(),
                 getBeginTime(transportOrder), getEndTime(transportOrder));
-        return getPageResult(PageUtil.convert(orders, TransportOrderMptAssembler.INSTANCE::fromDomain));
+        return ApiResponse.ok(getPageResult(PageUtil.convert(orders, TransportOrderMptAssembler.INSTANCE::fromDomain)));
     }
 
     @RequiresPermissions("completeVehicle:transport:transportOrder:query")
