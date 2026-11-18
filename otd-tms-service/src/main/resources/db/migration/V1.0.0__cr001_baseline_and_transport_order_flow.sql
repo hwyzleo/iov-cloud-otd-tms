@@ -1,8 +1,165 @@
 -- OTD-TMS-DSN-CR-001：运单主流程数据模型
--- 说明：
--- 1) 本脚本对「既有库」（doc/sql/init.sql 初始化）与「空库」均幂等可用；
--- 2) TMS 尚未产生运单业务数据，运单两表按新结构重建；
--- 3) tb_logistics_node 仅补列（既有主数据不重建），用 information_schema 判定避免重复添加。
+-- 说明：本脚本自身可完成建库（空库）与增量（已有基线库）两种场景：
+--   1) 主数据 7 张基线表使用 CREATE TABLE IF NOT EXISTS，重复执行无副作用；
+--   2) 运单两表按新结构重建（TMS 尚未产生运单业务数据）；
+--   3) tb_logistics_node 直接包含 warehouse_code（空库一次到位；既有库由本脚本前的基线脚本保证）。
+
+CREATE TABLE IF NOT EXISTS `tb_logistics_node_type`
+(
+    `id`          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `code`        VARCHAR(50)  NOT NULL COMMENT '据点类型代码',
+    `name`        VARCHAR(255) NOT NULL COMMENT '据点类型名称',
+    `enable`      TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`        INT          NOT NULL COMMENT '排序',
+    `description` VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`   BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`   BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version` INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`   TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`code`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='物流据点类型';
+
+CREATE TABLE IF NOT EXISTS `tb_logistics_node`
+(
+    `id`             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `code`           VARCHAR(50)  NOT NULL COMMENT '据点代码',
+    `name`           VARCHAR(255) NOT NULL COMMENT '据点名称',
+    `type_code`      VARCHAR(50)  NOT NULL COMMENT '据点类型代码',
+    `warehouse_code` VARCHAR(64)           DEFAULT NULL COMMENT 'WMS 仓库代码',
+    `province_code`  VARCHAR(20)           DEFAULT NULL COMMENT '省级行政区代码',
+    `city_code`      VARCHAR(20)           DEFAULT NULL COMMENT '地区级行政区代码',
+    `county_code`    VARCHAR(20)           DEFAULT NULL COMMENT '县级行政区代码',
+    `address`        VARCHAR(255)          DEFAULT NULL COMMENT '据点地址',
+    `contact_person` VARCHAR(100)          DEFAULT NULL COMMENT '联系人',
+    `contact_number` VARCHAR(20)           DEFAULT NULL COMMENT '联系电话',
+    `enable`         TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`           INT          NOT NULL COMMENT '排序',
+    `description`    VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`      BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`      BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version`    INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`      TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`code`),
+    KEY `idx_type_code` (`type_code`) USING BTREE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='物流据点';
+
+CREATE TABLE IF NOT EXISTS `tb_transport_type`
+(
+    `id`          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `code`        VARCHAR(50)  NOT NULL COMMENT '运输方式代码',
+    `name`        VARCHAR(255) NOT NULL COMMENT '运输方式名称',
+    `enable`      TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`        INT          NOT NULL COMMENT '排序',
+    `description` VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`   BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`   BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version` INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`   TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`code`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='运输方式';
+
+CREATE TABLE IF NOT EXISTS `tb_carrier`
+(
+    `id`             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `code`           VARCHAR(50)  NOT NULL COMMENT '承运商代码',
+    `name`           VARCHAR(255) NOT NULL COMMENT '承运商名称',
+    `address`        VARCHAR(255)          DEFAULT NULL COMMENT '公司地址',
+    `contact_person` VARCHAR(100)          DEFAULT NULL COMMENT '联系人',
+    `contact_number` VARCHAR(20)           DEFAULT NULL COMMENT '联系电话',
+    `enable`         TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`           INT          NOT NULL COMMENT '排序',
+    `description`    VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`      BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`      BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version`    INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`      TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`code`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='承运商';
+
+CREATE TABLE IF NOT EXISTS `tb_driver`
+(
+    `id`                     BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `carrier_code`           VARCHAR(50)  NOT NULL COMMENT '承运商代码',
+    `real_name`              VARCHAR(100) NOT NULL COMMENT '驾驶员姓名',
+    `contact_number`         VARCHAR(20)           DEFAULT NULL COMMENT '联系电话',
+    `id_number`              VARCHAR(50)           DEFAULT NULL COMMENT '身份证号',
+    `driving_license_number` VARCHAR(50)           DEFAULT NULL COMMENT '驾驶证号',
+    `enable`                 TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`                   INT          NOT NULL COMMENT '排序',
+    `description`            VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time`            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`              BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time`            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`              BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version`            INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`              TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`id_number`),
+    KEY `idx_carrier_code` (`carrier_code`) USING BTREE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='驾驶员';
+
+CREATE TABLE IF NOT EXISTS `tb_loading_vehicle`
+(
+    `id`                          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `carrier_code`                VARCHAR(50)  NOT NULL COMMENT '承运商代码',
+    `license_plate`               VARCHAR(100) NOT NULL COMMENT '车牌',
+    `vehicle_type`                VARCHAR(20)  NOT NULL COMMENT '车型：C6-6位车，C7-7位车，C8-8位车，RV-救援车',
+    `max_loading_capacity`        SMALLINT              DEFAULT NULL COMMENT '最大装载数',
+    `vehicle_registration_number` VARCHAR(50)           DEFAULT NULL COMMENT '行驶证号',
+    `enable`                      TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`                        INT          NOT NULL COMMENT '排序',
+    `description`                 VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time`                 TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`                   BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time`                 TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`                   BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version`                 INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`                   TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`license_plate`),
+    KEY `idx_carrier_code` (`carrier_code`) USING BTREE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='装载车';
+
+CREATE TABLE IF NOT EXISTS `tb_transport_route`
+(
+    `id`           BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `carrier_code` VARCHAR(50)  NOT NULL COMMENT '承运商代码',
+    `code`         VARCHAR(50)  NOT NULL COMMENT '线路代码',
+    `name`         VARCHAR(255) NOT NULL COMMENT '线路名称',
+    `route_plan`   TEXT         NOT NULL COMMENT '线路规划',
+    `route_hours`  SMALLINT     NOT NULL COMMENT '线路时长',
+    `route_km`     SMALLINT     NOT NULL COMMENT '线路距离',
+    `enable`       TINYINT      NOT NULL COMMENT '是否启用',
+    `sort`         INT          NOT NULL COMMENT '排序',
+    `description`  VARCHAR(255)          DEFAULT NULL COMMENT '备注',
+    `create_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`    BIGINT                DEFAULT NULL COMMENT '创建者',
+    `modify_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+    `modify_by`    BIGINT                DEFAULT NULL COMMENT '修改者',
+    `row_version`  INT                   DEFAULT NULL COMMENT '记录版本',
+    `row_valid`    TINYINT               DEFAULT NULL COMMENT '是否有效',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`code`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='运输线路';
 
 -- 入站消息去重（Inbox）
 CREATE TABLE IF NOT EXISTS `tb_tms_inbox`
@@ -129,9 +286,3 @@ CREATE TABLE `tb_transport_order_detail`
     KEY `idx_transport_order_detail_vin` (`vin`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='运输订单明细';
-
--- 据点 → WMS 仓库映射（仅补列，既有主数据保留）
--- 说明：Flyway 对同一数据库只执行一次本迁移，因此使用无条件 ALTER；
--- 前提是 tb_logistics_node 已由 doc/sql/init.sql 建立（TMS 主数据基线）。
-ALTER TABLE tb_logistics_node
-    ADD COLUMN warehouse_code VARCHAR(64) NULL COMMENT 'WMS 仓库代码' AFTER type_code;

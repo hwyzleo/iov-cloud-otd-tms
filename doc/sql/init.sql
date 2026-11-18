@@ -25,6 +25,7 @@ CREATE TABLE `db_tms`.`tb_logistics_node`
     `code`           VARCHAR(50)  NOT NULL COMMENT '据点代码',
     `name`           VARCHAR(255) NOT NULL COMMENT '据点名称',
     `type_code`      VARCHAR(50)  NOT NULL COMMENT '据点类型代码',
+    `warehouse_code` VARCHAR(64)           DEFAULT NULL COMMENT 'WMS 仓库代码',
     `province_code`  VARCHAR(20)           DEFAULT NULL COMMENT '省级行政区代码',
     `city_code`      VARCHAR(20)           DEFAULT NULL COMMENT '地区级行政区代码',
     `county_code`    VARCHAR(20)           DEFAULT NULL COMMENT '县级行政区代码',
