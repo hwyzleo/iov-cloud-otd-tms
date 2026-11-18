@@ -47,10 +47,7 @@ public class WmsOutboundFactConsumer {
      * @param record Kafka 记录
      */
     @KafkaListener(
-            topics = {
-                    "${tms.topics.wms-outbound-changed:wms.vehicle-outbound.changed}",
-                    "${tms.topics.wms-outbound-command-rejected:wms.vehicle-outbound.command-rejected}"
-            },
+            topics = "${tms.topics.wms-outbound-changed:wms.vehicle-outbound.changed}",
             groupId = "${tms.consumer.outbound-fact-group:otd-tms-outbound-fact}"
     )
     public void onOutboundFact(ConsumerRecord<String, String> record) {

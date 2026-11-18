@@ -5,10 +5,23 @@ mybatis-plus:
   type-aliases-package: net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po
 
 iov:
-  # OTD-TMS-DSN-CR-001：本期未声明 Topic Definition，关闭框架 Topic Provisioning（依赖预建 Topic）
+  # OTD-TMS-DSN-CR-001：声明 TMS 需要的 Topic，由框架在启动时预创建（已存在则跳过）
   kafka:
     topic-provisioning:
-      enabled: false
+      enabled: true
+      topics:
+        # 上游 VSO 发运申请事实（TMS 消费）
+        - name: ${TMS_TOPIC_VSO_TRANSPORT_APPLIED:vso.transport.applied}
+          partitions: 3
+          replication-factor: 1
+        # VSO 发运申请死信
+        - name: ${TMS_TOPIC_VSO_TRANSPORT_APPLIED_DLQ:vso.transport.applied.tms.dlq}
+          partitions: 1
+          replication-factor: 1
+        # WMS 出库事实死信
+        - name: ${TMS_TOPIC_WMS_OUTBOUND_CHANGED_DLQ:wms.vehicle-outbound.changed.tms.dlq}
+          partitions: 1
+          replication-factor: 1
   web:
     jackson:
       # 事件与对外 JSON 统一 ISO-8601（UTC + 固定 3 位毫秒），OTD-TMS-DSN-CR-001 INV-006
@@ -21,7 +34,6 @@ tms:
     wms-outbound-requested: ${TMS_TOPIC_WMS_OUTBOUND_REQUESTED:wms.vehicle-outbound.requested}
     wms-outbound-cancellation-requested: ${TMS_TOPIC_WMS_OUTBOUND_CANCELLATION:wms.vehicle-outbound.cancellation-requested}
     wms-outbound-changed: ${TMS_TOPIC_WMS_OUTBOUND_CHANGED:wms.vehicle-outbound.changed}
-    wms-outbound-command-rejected: ${TMS_TOPIC_WMS_OUTBOUND_REJECTED:wms.vehicle-outbound.command-rejected}
     vso-transport-applied-dlq: ${TMS_TOPIC_VSO_TRANSPORT_APPLIED_DLQ:vso.transport.applied.tms.dlq}
     wms-outbound-changed-dlq: ${TMS_TOPIC_WMS_OUTBOUND_CHANGED_DLQ:wms.vehicle-outbound.changed.tms.dlq}
   consumer:
