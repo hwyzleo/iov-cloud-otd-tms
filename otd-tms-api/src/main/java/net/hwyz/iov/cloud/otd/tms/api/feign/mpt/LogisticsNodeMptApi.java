@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
+
+import java.util.List;
 import net.hwyz.iov.cloud.otd.tms.api.contract.LogisticsNodeMpt;
 
 /**
@@ -20,6 +22,13 @@ public interface LogisticsNodeMptApi {
      * @return 物流据点信息列表
      */
     ApiResponse<PageResult<LogisticsNodeMpt>> list(LogisticsNodeMpt logisticsNode);
+
+    /**
+     * 查询所有LogisticsNodeMpt（下拉选项用）
+     *
+     * @return 列表
+     */
+    List<LogisticsNodeMpt> listAll();
 
     /**
      * 导出物流据点信息

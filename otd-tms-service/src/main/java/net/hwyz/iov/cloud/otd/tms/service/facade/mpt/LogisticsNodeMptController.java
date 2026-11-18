@@ -53,6 +53,20 @@ public class LogisticsNodeMptController extends BaseController implements Logist
     }
 
     /**
+     * 查询所有物流据点（下拉选项）
+     *
+     * @return 物流据点列表
+     */
+    @RequiresPermissions("completeVehicle:transport:logisticsNode:list")
+    @Override
+    @GetMapping(value = "/listAll")
+    public List<LogisticsNodeMpt> listAll() {
+        log.info("管理后台用户[{}]查询所有物流据点", SecurityUtils.getUsername());
+        List<LogisticsNodePo> poList = logisticsNodeAppService.search(null, null, null, null);
+        return LogisticsNodeMptAssembler.INSTANCE.fromPoList(poList);
+    }
+
+    /**
      * 导出物流据点信息
      *
      * @param response      响应

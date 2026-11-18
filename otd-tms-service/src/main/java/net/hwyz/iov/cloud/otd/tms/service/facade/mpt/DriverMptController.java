@@ -53,6 +53,20 @@ public class DriverMptController extends BaseController implements DriverMptApi 
     }
 
     /**
+     * 查询所有驾驶员（下拉选项）
+     *
+     * @return 驾驶员列表
+     */
+    @RequiresPermissions("completeVehicle:transport:driver:list")
+    @Override
+    @GetMapping(value = "/listAll")
+    public List<DriverMpt> listAll() {
+        log.info("管理后台用户[{}]查询所有驾驶员", SecurityUtils.getUsername());
+        List<DriverPo> poList = driverAppService.search(null, null, null, null, null);
+        return DriverMptAssembler.INSTANCE.fromPoList(poList);
+    }
+
+    /**
      * 导出驾驶员
      *
      * @param response 响应

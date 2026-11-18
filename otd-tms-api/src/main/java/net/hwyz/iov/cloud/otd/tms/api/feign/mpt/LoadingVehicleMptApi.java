@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
+
+import java.util.List;
 import net.hwyz.iov.cloud.otd.tms.api.contract.LoadingVehicleMpt;
 
 /**
@@ -20,6 +22,13 @@ public interface LoadingVehicleMptApi {
      * @return 装载车列表
      */
     ApiResponse<PageResult<LoadingVehicleMpt>> list(LoadingVehicleMpt loadingVehicle);
+
+    /**
+     * 查询所有LoadingVehicleMpt（下拉选项用）
+     *
+     * @return 列表
+     */
+    List<LoadingVehicleMpt> listAll();
 
     /**
      * 导出装载车

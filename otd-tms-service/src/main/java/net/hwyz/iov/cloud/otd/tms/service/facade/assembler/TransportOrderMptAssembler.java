@@ -1,5 +1,6 @@
 package net.hwyz.iov.cloud.otd.tms.service.facade.assembler;
 
+import net.hwyz.iov.cloud.otd.tms.api.contract.TransportOrderDetailMpt;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportOrderMpt;
 import net.hwyz.iov.cloud.otd.tms.service.domain.model.TransportOrder;
 import net.hwyz.iov.cloud.otd.tms.service.domain.model.TransportOrderDetail;
@@ -50,5 +51,44 @@ public interface TransportOrderMptAssembler {
     default List<String> mapVins(List<TransportOrderDetail> details) {
         return details == null ? List.of()
                 : details.stream().map(TransportOrderDetail::getVin).collect(Collectors.toList());
+    }
+
+    /**
+     * 明细转 VO
+     *
+     * @param detail 明细
+     * @return VO
+     */
+    @Mapping(target = "stateName", expression = "java(detailStateName(detail.getState()))")
+    TransportOrderDetailMpt fromDetail(TransportOrderDetail detail);
+
+    /**
+     * 批量转换明细
+     *
+     * @param details 明细列表
+     * @return VO 列表
+     */
+    default List<TransportOrderDetailMpt> fromDetailList(List<TransportOrderDetail> details) {
+        return details == null ? List.of()
+                : details.stream().map(this::fromDetail).collect(Collectors.toList());
+    }
+
+    /**
+     * WMS 明细状态快照 → 中文名称
+     *
+     * @param state 状态
+     * @return 名称
+     */
+    default String detailStateName(String state) {
+        if (state == null) {
+            return null;
+        }
+        return switch (state) {
+            case "RESERVED" -> "已预留";
+            case "LOADED" -> "已装车";
+            case "OUTBOUND" -> "已出库";
+            case "RELEASED" -> "已释放";
+            default -> state;
+        };
     }
 }

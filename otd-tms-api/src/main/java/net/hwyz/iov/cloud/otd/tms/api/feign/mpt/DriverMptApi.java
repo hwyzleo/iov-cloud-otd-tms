@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
+
+import java.util.List;
 import net.hwyz.iov.cloud.otd.tms.api.contract.DriverMpt;
 
 /**
@@ -20,6 +22,13 @@ public interface DriverMptApi {
      * @return 驾驶员列表
      */
     ApiResponse<PageResult<DriverMpt>> list(DriverMpt driver);
+
+    /**
+     * 查询所有DriverMpt（下拉选项用）
+     *
+     * @return 列表
+     */
+    List<DriverMpt> listAll();
 
     /**
      * 导出驾驶员

@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.hwyz.iov.cloud.framework.common.bean.ApiResponse;
 import net.hwyz.iov.cloud.framework.common.bean.AjaxResult;
 import net.hwyz.iov.cloud.framework.common.bean.PageResult;
+
+import java.util.List;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportRouteMpt;
 
 /**
@@ -20,6 +22,13 @@ public interface TransportRouteMptApi {
      * @return 运输线路列表
      */
     ApiResponse<PageResult<TransportRouteMpt>> list(TransportRouteMpt transportRoute);
+
+    /**
+     * 查询所有TransportRouteMpt（下拉选项用）
+     *
+     * @return 列表
+     */
+    List<TransportRouteMpt> listAll();
 
     /**
      * 导出运输线路

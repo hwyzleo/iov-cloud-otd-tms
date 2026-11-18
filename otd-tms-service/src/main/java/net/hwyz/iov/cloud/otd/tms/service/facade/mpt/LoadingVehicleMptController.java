@@ -53,6 +53,20 @@ public class LoadingVehicleMptController extends BaseController implements Loadi
     }
 
     /**
+     * 查询所有装载车（下拉选项）
+     *
+     * @return 装载车列表
+     */
+    @RequiresPermissions("completeVehicle:transport:loadVehicle:list")
+    @Override
+    @GetMapping(value = "/listAll")
+    public List<LoadingVehicleMpt> listAll() {
+        log.info("管理后台用户[{}]查询所有装载车", SecurityUtils.getUsername());
+        List<LoadingVehiclePo> poList = loadingVehicleAppService.search(null, null, null, null, null);
+        return LoadingVehicleMptAssembler.INSTANCE.fromPoList(poList);
+    }
+
+    /**
      * 导出装载车
      *
      * @param response    响应

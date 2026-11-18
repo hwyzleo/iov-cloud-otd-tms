@@ -53,6 +53,20 @@ public class TransportRouteMptController extends BaseController implements Trans
     }
 
     /**
+     * 查询所有运输线路（下拉选项）
+     *
+     * @return 运输线路列表
+     */
+    @RequiresPermissions("completeVehicle:transport:transportRoute:list")
+    @Override
+    @GetMapping(value = "/listAll")
+    public List<TransportRouteMpt> listAll() {
+        log.info("管理后台用户[{}]查询所有运输线路", SecurityUtils.getUsername());
+        List<TransportRoutePo> poList = transportRouteAppService.search(null, null, null, null, null);
+        return TransportRouteMptAssembler.INSTANCE.fromPoList(poList);
+    }
+
+    /**
      * 导出运输线路
      *
      * @param response       响应

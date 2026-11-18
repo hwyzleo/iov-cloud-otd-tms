@@ -13,6 +13,7 @@ import net.hwyz.iov.cloud.framework.security.util.SecurityUtils;
 import net.hwyz.iov.cloud.framework.web.controller.BaseController;
 import net.hwyz.iov.cloud.framework.web.util.PageUtil;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportOrderActionMpt;
+import net.hwyz.iov.cloud.otd.tms.api.contract.TransportOrderDetailMpt;
 import net.hwyz.iov.cloud.otd.tms.api.contract.TransportOrderMpt;
 import net.hwyz.iov.cloud.otd.tms.api.feign.mpt.TransportOrderMptApi;
 import net.hwyz.iov.cloud.otd.tms.service.application.service.TransportOrderAppService;
@@ -63,6 +64,15 @@ public class TransportOrderMptController extends BaseController implements Trans
         log.info("管理后台用户[{}]查询运输单[{}]", SecurityUtils.getUsername(), orderNum);
         return success(TransportOrderMptAssembler.INSTANCE.fromDomain(
                 transportOrderAppService.getByOrderNum(orderNum)));
+    }
+
+    @RequiresPermissions("completeVehicle:transport:transportOrder:query")
+    @Override
+    @GetMapping(value = "/{orderNum}/detail")
+    public List<TransportOrderDetailMpt> listDetail(@PathVariable String orderNum) {
+        log.info("管理后台用户[{}]查询运输单[{}] VIN 明细", SecurityUtils.getUsername(), orderNum);
+        return TransportOrderMptAssembler.INSTANCE.fromDetailList(
+                transportOrderAppService.getByOrderNum(orderNum).getDetails());
     }
 
     @Log(title = "运输单管理", businessType = BusinessType.UPDATE)
