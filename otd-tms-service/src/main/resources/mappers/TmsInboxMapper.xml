@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.dao.TmsInboxDao">
+
+    <resultMap id="baseResultMap"
+               type="net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TmsInboxPo">
+        <id column="id" property="id"/>
+        <result column="consumer_name" property="consumerName"/>
+        <result column="topic" property="topic"/>
+        <result column="event_id" property="eventId"/>
+        <result column="event_type" property="eventType"/>
+        <result column="payload_digest" property="payloadDigest"/>
+        <result column="process_state" property="processState"/>
+        <result column="business_key" property="businessKey"/>
+        <result column="result_event_id" property="resultEventId"/>
+        <result column="error_code" property="errorCode"/>
+        <result column="error_message" property="errorMessage"/>
+        <result column="received_time" property="receivedTime"/>
+        <result column="processed_time" property="processedTime"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="row_version" property="rowVersion"/>
+        <result column="row_valid" property="rowValid"/>
+    </resultMap>
+
+    <sql id="baseColumnList">
+        id, consumer_name, topic, event_id, event_type, payload_digest, process_state, business_key,
+        result_event_id, error_code, error_message, received_time, processed_time,
+        description, create_time, row_version, row_valid
+    </sql>
+
+    <insert id="insertPo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tb_tms_inbox (consumer_name, topic, event_id, event_type, payload_digest, process_state,
+                                  business_key, result_event_id, error_code, error_message,
+                                  received_time, processed_time, description, create_time, row_version, row_valid)
+        VALUES (#{consumerName}, #{topic}, #{eventId}, #{eventType}, #{payloadDigest}, #{processState},
+                #{businessKey}, #{resultEventId}, #{errorCode}, #{errorMessage},
+                #{receivedTime}, #{processedTime}, #{description}, now(), 1, 1)
+    </insert>
+
+    <select id="selectPoByConsumerAndEvent" resultMap="baseResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM tb_tms_inbox t
+        WHERE t.row_valid = 1
+        AND t.consumer_name = #{consumerName}
+        AND t.event_id = #{eventId}
+    </select>
+
+</mapper>

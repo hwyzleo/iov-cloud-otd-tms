@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+mybatis-plus:
+  type-aliases-package: net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po
+
+iov:
+  # OTD-TMS-DSN-CR-001：本期未声明 Topic Definition，关闭框架 Topic Provisioning（依赖预建 Topic）
+  kafka:
+    topic-provisioning:
+      enabled: false
+  web:
+    jackson:
+      # 事件与对外 JSON 统一 ISO-8601（UTC + 固定 3 位毫秒），OTD-TMS-DSN-CR-001 INV-006
+      zone-id: UTC
+
+tms:
+  source-system: TMS
+  topics:
+    vso-transport-applied: ${TMS_TOPIC_VSO_TRANSPORT_APPLIED:vso.transport.applied}
+    wms-outbound-requested: ${TMS_TOPIC_WMS_OUTBOUND_REQUESTED:wms.vehicle-outbound.requested}
+    wms-outbound-cancellation-requested: ${TMS_TOPIC_WMS_OUTBOUND_CANCELLATION:wms.vehicle-outbound.cancellation-requested}
+    wms-outbound-changed: ${TMS_TOPIC_WMS_OUTBOUND_CHANGED:wms.vehicle-outbound.changed}
+    wms-outbound-command-rejected: ${TMS_TOPIC_WMS_OUTBOUND_REJECTED:wms.vehicle-outbound.command-rejected}
+    vso-transport-applied-dlq: ${TMS_TOPIC_VSO_TRANSPORT_APPLIED_DLQ:vso.transport.applied.tms.dlq}
+    wms-outbound-changed-dlq: ${TMS_TOPIC_WMS_OUTBOUND_CHANGED_DLQ:wms.vehicle-outbound.changed.tms.dlq}
+  consumer:
+    auto-startup: ${TMS_CONSUMER_AUTO_STARTUP:true}
+    transport-applied-group: otd-tms-transport-applied
+    outbound-fact-group: otd-tms-outbound-fact
+  outbox:
+    aggregate-type: TRANSPORT_ORDER
+    relay:
+      enabled: ${TMS_OUTBOX_RELAY_ENABLED:true}
+      scan-interval-ms: ${TMS_OUTBOX_RELAY_SCAN_INTERVAL_MS:10000}
+      batch-size: 100
+      max-retry: 10
+      base-backoff-ms: 5000
+      max-backoff-ms: 300000
+  compensation:
+    enabled: ${TMS_COMPENSATION_ENABLED:true}
+    scan-interval-ms: ${TMS_COMPENSATION_SCAN_INTERVAL_MS:300000}
+    page-size: 100

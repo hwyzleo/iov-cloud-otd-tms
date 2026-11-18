@@ -6,14 +6,14 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>tms-api</module>
-        <module>tms-service</module>
+        <module>otd-tms-api</module>
+        <module>otd-tms-service</module>
     </modules>
 
     <groupId>net.hwyz.iov.cloud.otd</groupId>
-    <artifactId>tms</artifactId>
+    <artifactId>otd-tms</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <description>运输管理系统</description>
-    <name>tms</name>
+    <name>otd-tms</name>
 
 </project>

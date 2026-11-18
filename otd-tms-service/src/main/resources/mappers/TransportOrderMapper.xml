@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.dao.TransportOrderDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="baseResultMap"
+               type="net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TransportOrderPo">
+        <id column="id" property="id"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="source_system" property="sourceSystem"/>
+        <result column="source_order_no" property="sourceOrderNo"/>
+        <result column="warehouse_code" property="warehouseCode"/>
+        <result column="carrier_code" property="carrierCode"/>
+        <result column="state" property="state"/>
+        <result column="transport_route_code" property="transportRouteCode"/>
+        <result column="dispatch_logistics_node_code" property="dispatchLogisticsNodeCode"/>
+        <result column="estimated_loading_time" property="estimatedLoadingTime"/>
+        <result column="estimated_arrival_time" property="estimatedArrivalTime"/>
+        <result column="vehicle_dispatch_time" property="vehicleDispatchTime"/>
+        <result column="handover_logistics_node_code" property="handoverLogisticsNodeCode"/>
+        <result column="delivery_time" property="deliveryTime"/>
+        <result column="receipt_time" property="receiptTime"/>
+        <result column="license_plate" property="licensePlate"/>
+        <result column="id_number" property="idNumber"/>
+        <result column="dispatcher" property="dispatcher"/>
+        <result column="dispatch_time" property="dispatchTime"/>
+        <result column="confirm" property="confirm"/>
+        <result column="dispatch_version" property="dispatchVersion"/>
+        <result column="reject_reason" property="rejectReason"/>
+        <result column="last_reported_vso_state" property="lastReportedVsoState"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="modify_by" property="modifyBy"/>
+        <result column="row_version" property="rowVersion"/>
+        <result column="row_valid" property="rowValid"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="baseColumnList">
+        id, order_num, source_system, source_order_no, warehouse_code, carrier_code, state,
+        transport_route_code, dispatch_logistics_node_code, estimated_loading_time, estimated_arrival_time,
+        vehicle_dispatch_time, handover_logistics_node_code, delivery_time, receipt_time, license_plate,
+        id_number, dispatcher, dispatch_time, confirm, dispatch_version, reject_reason,
+        last_reported_vso_state, description, create_time, create_by, modify_time, modify_by,
+        row_version, row_valid
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="insertPo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tb_transport_order (
+        order_num, source_system, source_order_no, warehouse_code, carrier_code, state,
+        transport_route_code, dispatch_logistics_node_code, estimated_loading_time, estimated_arrival_time,
+        vehicle_dispatch_time, handover_logistics_node_code, delivery_time, receipt_time, license_plate,
+        id_number, dispatcher, dispatch_time, confirm, dispatch_version, reject_reason,
+        last_reported_vso_state, description, create_time, create_by, modify_time, modify_by,
+        row_version, row_valid
+        )
+        VALUES (
+        #{orderNum}, #{sourceSystem}, #{sourceOrderNo}, #{warehouseCode}, #{carrierCode}, #{state},
+        #{transportRouteCode}, #{dispatchLogisticsNodeCode}, #{estimatedLoadingTime}, #{estimatedArrivalTime},
+        #{vehicleDispatchTime}, #{handoverLogisticsNodeCode}, #{deliveryTime}, #{receiptTime}, #{licensePlate},
+        #{idNumber}, #{dispatcher}, #{dispatchTime}, #{confirm}, #{dispatchVersion}, #{rejectReason},
+        #{lastReportedVsoState}, #{description}, now(), #{createBy}, now(), #{modifyBy},
+        1, 1
+        )
+    </insert>
+
+    <!-- 更新 -->
+    <update id="updatePo">
+        UPDATE tb_transport_order t SET
+        t.source_system = #{sourceSystem},
+        t.source_order_no = #{sourceOrderNo},
+        t.warehouse_code = #{warehouseCode},
+        t.carrier_code = #{carrierCode},
+        t.state = #{state},
+        t.transport_route_code = #{transportRouteCode},
+        t.dispatch_logistics_node_code = #{dispatchLogisticsNodeCode},
+        t.estimated_loading_time = #{estimatedLoadingTime},
+        t.estimated_arrival_time = #{estimatedArrivalTime},
+        t.vehicle_dispatch_time = #{vehicleDispatchTime},
+        t.handover_logistics_node_code = #{handoverLogisticsNodeCode},
+        t.delivery_time = #{deliveryTime},
+        t.receipt_time = #{receiptTime},
+        t.license_plate = #{licensePlate},
+        t.id_number = #{idNumber},
+        t.dispatcher = #{dispatcher},
+        t.dispatch_time = #{dispatchTime},
+        t.confirm = #{confirm},
+        t.dispatch_version = #{dispatchVersion},
+        t.reject_reason = #{rejectReason},
+        t.last_reported_vso_state = #{lastReportedVsoState},
+        t.description = #{description},
+        t.modify_time = now(),
+        t.modify_by = #{modifyBy},
+        t.row_version = t.row_version + 1
+        WHERE t.id = #{id}
+        AND t.row_valid = 1
+    </update>
+
+    <!-- 通过运单号查询 -->
+    <select id="selectPoByOrderNum" resultMap="baseResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM tb_transport_order t
+        WHERE t.row_valid = 1
+        AND t.order_num = #{orderNum}
+    </select>
+
+    <!-- 通过来源订单查询 -->
+    <select id="selectPoBySourceOrder" resultMap="baseResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM tb_transport_order t
+        WHERE t.row_valid = 1
+        AND t.source_system = #{sourceSystem}
+        AND t.source_order_no = #{sourceOrderNo}
+    </select>
+
+    <!-- 条件查询（配合 PageHelper 数据库分页） -->
+    <select id="selectPoByMap" parameterType="java.util.Map" resultMap="baseResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM tb_transport_order t
+        WHERE t.row_valid = 1
+        <if test="orderNum != null and orderNum != ''">
+            AND t.order_num = #{orderNum}
+        </if>
+        <if test="state != null">
+            AND t.state = #{state}
+        </if>
+        <if test="carrierCode != null and carrierCode != ''">
+            AND t.carrier_code = #{carrierCode}
+        </if>
+        <if test="nodeCode != null and nodeCode != ''">
+            AND (t.dispatch_logistics_node_code = #{nodeCode} OR t.handover_logistics_node_code = #{nodeCode})
+        </if>
+        <if test="beginTime != null">
+            AND t.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND t.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY t.id DESC
+    </select>
+
+    <!-- 补偿扫描：按状态取运单号 -->
+    <select id="selectOrderNumsByStates" resultType="java.lang.String">
+        SELECT t.order_num
+        FROM tb_transport_order t
+        WHERE t.row_valid = 1
+        AND t.state IN
+        <foreach collection="states" item="state" open="(" separator="," close=")">
+            #{state}
+        </foreach>
+        ORDER BY t.id ASC
+        LIMIT #{limit}
+    </select>
+
+    <!-- VIN 唯一性：其它有效运单中是否已存在 -->
+    <select id="countActiveByVin" resultType="int">
+        SELECT COUNT(1)
+        FROM tb_transport_order_detail d
+        INNER JOIN tb_transport_order o ON o.order_num = d.order_num AND o.row_valid = 1
+        WHERE d.row_valid = 1
+        AND d.vin = #{vin}
+        AND o.state NOT IN (7, 9)
+        <if test="orderNum != null and orderNum != ''">
+            AND o.order_num != #{orderNum}
+        </if>
+    </select>
+
+</mapper>

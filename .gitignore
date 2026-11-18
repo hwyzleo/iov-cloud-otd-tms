@@ -68,3 +68,8 @@ target/
 ### mybatisplus ###
 **/templates/*.ftl
 MybatisPlusGenerator.java
+### 构建产物 ###
+target/
+
+### graphify 知识图谱 ###
+graphify-out/

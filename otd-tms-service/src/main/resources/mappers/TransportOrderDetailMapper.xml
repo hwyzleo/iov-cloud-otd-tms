@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.dao.TransportOrderDetailDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="baseResultMap"
+               type="net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TransportOrderDetailPo">
+        <id column="id" property="id"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="vin" property="vin"/>
+        <result column="state" property="state"/>
+        <result column="outbound_order_num" property="outboundOrderNum"/>
+        <result column="loading_line" property="loadingLine"/>
+        <result column="delivery_time" property="deliveryTime"/>
+        <result column="receipt_time" property="receiptTime"/>
+        <result column="lock" property="lock"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="modify_by" property="modifyBy"/>
+        <result column="row_version" property="rowVersion"/>
+        <result column="row_valid" property="rowValid"/>
+    </resultMap>
+
+    <sql id="baseColumnList">
+        id, order_num, vin, state, outbound_order_num, loading_line, delivery_time, receipt_time, `lock`,
+        description, create_time, create_by, modify_time, modify_by, row_version, row_valid
+    </sql>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsertPo" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+        INSERT INTO tb_transport_order_detail (
+        order_num, vin, state, outbound_order_num, loading_line, delivery_time, receipt_time, `lock`,
+        description, create_time, create_by, modify_time, modify_by, row_version, row_valid
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.orderNum}, #{item.vin}, #{item.state}, #{item.outboundOrderNum}, #{item.loadingLine},
+            #{item.deliveryTime}, #{item.receiptTime}, #{item.lock},
+            #{item.description}, now(), #{item.createBy}, now(), #{item.modifyBy}, 1, 1
+            )
+        </foreach>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="updatePo">
+        UPDATE tb_transport_order_detail t SET
+        t.state = #{state},
+        t.outbound_order_num = #{outboundOrderNum},
+        t.loading_line = #{loadingLine},
+        t.delivery_time = #{deliveryTime},
+        t.receipt_time = #{receiptTime},
+        t.`lock` = #{lock},
+        t.description = #{description},
+        t.modify_time = now(),
+        t.modify_by = #{modifyBy},
+        t.row_version = t.row_version + 1
+        WHERE t.id = #{id}
+        AND t.row_valid = 1
+    </update>
+
+    <!-- 按运单号查询 -->
+    <select id="selectPoByOrderNum" resultMap="baseResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM tb_transport_order_detail t
+        WHERE t.row_valid = 1
+        AND t.order_num = #{orderNum}
+        ORDER BY t.id ASC
+    </select>
+
+    <!-- 按运单号删除（重建明细） -->
+    <update id="deleteByOrderNum">
+        UPDATE tb_transport_order_detail t SET
+        t.row_valid = 0,
+        t.modify_time = now()
+        WHERE t.order_num = #{orderNum}
+        AND t.row_valid = 1
+    </update>
+
+</mapper>
