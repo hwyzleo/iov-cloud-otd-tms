@@ -29,6 +29,9 @@ iov:
 
 tms:
   source-system: TMS
+  flyway:
+    # 首次引入 Flyway：允许启动时 repair 历史失败记录（生产稳定后关闭）
+    repair-on-startup: ${TMS_FLYWAY_REPAIR_ON_STARTUP:true}
   topics:
     vso-transport-applied: ${TMS_TOPIC_VSO_TRANSPORT_APPLIED:vso.transport.applied}
     wms-outbound-requested: ${TMS_TOPIC_WMS_OUTBOUND_REQUESTED:wms.vehicle-outbound.requested}
