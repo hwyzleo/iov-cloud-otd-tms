@@ -135,6 +135,10 @@ public class TransportOrder {
      * 已回写 VSO 的订单状态值
      */
     private Integer lastReportedVsoState;
+    /**
+     * 交付库到货请求批次序号
+     */
+    private Integer inboundRequestSeq;
 
     /**
      * VIN 明细
@@ -283,6 +287,16 @@ public class TransportOrder {
      */
     public void markVsoReported(Integer vsoState) {
         this.lastReportedVsoState = vsoState;
+    }
+
+    /**
+     * 递增交付库到货请求批次序号
+     *
+     * @return 本批次序号（从 1 开始）
+     */
+    public int nextInboundRequestSeq() {
+        this.inboundRequestSeq = (inboundRequestSeq == null ? 0 : inboundRequestSeq) + 1;
+        return this.inboundRequestSeq;
     }
 
     /**

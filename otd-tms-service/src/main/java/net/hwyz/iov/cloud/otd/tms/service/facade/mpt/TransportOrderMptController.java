@@ -105,8 +105,8 @@ public class TransportOrderMptController extends BaseController implements Trans
     @PostMapping("/action/handover")
     public AjaxResult handover(@Valid @RequestBody TransportOrderActionMpt request) {
         log.info("管理后台用户[{}]运输单[{}]交车", SecurityUtils.getUsername(), request.getOrderNum());
-        transportOrderAppService.handover(request.getOrderNum(), Boolean.TRUE.equals(request.getAllCompleted()),
-                SecurityUtils.getUsername());
+        transportOrderAppService.handover(request.getOrderNum(), request.getVins(),
+                Boolean.TRUE.equals(request.getAllCompleted()), SecurityUtils.getUsername());
         return success();
     }
 

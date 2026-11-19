@@ -96,4 +96,7 @@ public class TransportOrderPo extends BasePo {
 
     @TableField("last_reported_vso_state")
     private Integer lastReportedVsoState;
+
+    @TableField("inbound_request_seq")
+    private Integer inboundRequestSeq;
 }

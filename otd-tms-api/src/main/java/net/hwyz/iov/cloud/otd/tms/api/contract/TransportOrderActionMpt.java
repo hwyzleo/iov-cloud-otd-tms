@@ -5,6 +5,7 @@ import lombok.*;
 import net.hwyz.iov.cloud.framework.common.bean.BaseRequest;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 管理后台运输单动作请求（OTD-TMS-DSN-CR-001）
@@ -73,6 +74,11 @@ public class TransportOrderActionMpt extends BaseRequest {
 
     /**
      * 是否全部交车/接车完成（交车、接车动作使用）
+     */
+    private List<String> vins;
+
+    /**
+     * 是否全部完成
      */
     private Boolean allCompleted;
 

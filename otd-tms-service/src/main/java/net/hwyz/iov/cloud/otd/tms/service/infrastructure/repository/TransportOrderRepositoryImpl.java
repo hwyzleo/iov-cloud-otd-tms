@@ -120,6 +120,7 @@ public class TransportOrderRepositoryImpl implements TransportOrderRepository {
                 .dispatchVersion(order.getDispatchVersion())
                 .rejectReason(order.getRejectReason())
                 .lastReportedVsoState(order.getLastReportedVsoState())
+                .inboundRequestSeq(order.getInboundRequestSeq())
                 .details(order.getDetails())
                 .build();
     }
@@ -149,6 +150,7 @@ public class TransportOrderRepositoryImpl implements TransportOrderRepository {
                 .dispatchVersion(po.getDispatchVersion())
                 .rejectReason(po.getRejectReason())
                 .lastReportedVsoState(po.getLastReportedVsoState())
+                .inboundRequestSeq(po.getInboundRequestSeq())
                 .details(withDetails ? loadDetails(po.getOrderNum()) : new java.util.ArrayList<>())
                 .build();
     }
@@ -162,6 +164,7 @@ public class TransportOrderRepositoryImpl implements TransportOrderRepository {
                         .state(po.getState())
                         .outboundOrderNum(po.getOutboundOrderNum())
                         .loadingLine(po.getLoadingLine())
+                        .deliveryTime(po.getDeliveryTime())
                         .lock(po.getLock())
                         .build())
                 .collect(Collectors.toList());
@@ -192,6 +195,7 @@ public class TransportOrderRepositoryImpl implements TransportOrderRepository {
                 .dispatchVersion(order.getDispatchVersion())
                 .rejectReason(order.getRejectReason())
                 .lastReportedVsoState(order.getLastReportedVsoState())
+                .inboundRequestSeq(order.getInboundRequestSeq())
                 .build();
     }
 
@@ -203,6 +207,7 @@ public class TransportOrderRepositoryImpl implements TransportOrderRepository {
                 .state(detail.getState())
                 .outboundOrderNum(detail.getOutboundOrderNum())
                 .loadingLine(detail.getLoadingLine())
+                .deliveryTime(detail.getDeliveryTime())
                 .lock(detail.getLock())
                 .build();
     }

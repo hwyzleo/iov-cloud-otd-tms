@@ -47,7 +47,11 @@ public enum TmsErrorCode {
     /**
      * VIN 不属于该运单
      */
-    VIN_NOT_IN_ORDER("203009", "VIN 不属于该运单");
+    VIN_NOT_IN_ORDER("203009", "VIN 不属于该运单"),
+    /**
+     * 接车据点未配置仓库
+     */
+    HANDOVER_WAREHOUSE_MISSING("203010", "接车据点未配置仓库");
 
     private final String code;
     private final String message;

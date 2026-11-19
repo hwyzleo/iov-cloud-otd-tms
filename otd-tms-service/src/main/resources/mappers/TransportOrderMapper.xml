@@ -28,6 +28,7 @@
         <result column="dispatch_version" property="dispatchVersion"/>
         <result column="reject_reason" property="rejectReason"/>
         <result column="last_reported_vso_state" property="lastReportedVsoState"/>
+        <result column="inbound_request_seq" property="inboundRequestSeq"/>
         <result column="description" property="description"/>
         <result column="create_time" property="createTime"/>
         <result column="create_by" property="createBy"/>
@@ -43,7 +44,7 @@
         transport_route_code, dispatch_logistics_node_code, estimated_loading_time, estimated_arrival_time,
         vehicle_dispatch_time, handover_logistics_node_code, delivery_time, receipt_time, license_plate,
         id_number, dispatcher, dispatch_time, confirm, dispatch_version, reject_reason,
-        last_reported_vso_state, description, create_time, create_by, modify_time, modify_by,
+        last_reported_vso_state, inbound_request_seq, description, create_time, create_by, modify_time, modify_by,
         row_version, row_valid
     </sql>
 
@@ -54,7 +55,7 @@
         transport_route_code, dispatch_logistics_node_code, estimated_loading_time, estimated_arrival_time,
         vehicle_dispatch_time, handover_logistics_node_code, delivery_time, receipt_time, license_plate,
         id_number, dispatcher, dispatch_time, confirm, dispatch_version, reject_reason,
-        last_reported_vso_state, description, create_time, create_by, modify_time, modify_by,
+        last_reported_vso_state, inbound_request_seq, description, create_time, create_by, modify_time, modify_by,
         row_version, row_valid
         )
         VALUES (
@@ -62,7 +63,7 @@
         #{transportRouteCode}, #{dispatchLogisticsNodeCode}, #{estimatedLoadingTime}, #{estimatedArrivalTime},
         #{vehicleDispatchTime}, #{handoverLogisticsNodeCode}, #{deliveryTime}, #{receiptTime}, #{licensePlate},
         #{idNumber}, #{dispatcher}, #{dispatchTime}, #{confirm}, #{dispatchVersion}, #{rejectReason},
-        #{lastReportedVsoState}, #{description}, now(), #{createBy}, now(), #{modifyBy},
+        #{lastReportedVsoState}, #{inboundRequestSeq}, #{description}, now(), #{createBy}, now(), #{modifyBy},
         1, 1
         )
     </insert>
@@ -91,6 +92,7 @@
         t.dispatch_version = #{dispatchVersion},
         t.reject_reason = #{rejectReason},
         t.last_reported_vso_state = #{lastReportedVsoState},
+        t.inbound_request_seq = #{inboundRequestSeq},
         t.description = #{description},
         t.modify_time = now(),
         t.modify_by = #{modifyBy},

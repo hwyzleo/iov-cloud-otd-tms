@@ -3,6 +3,8 @@ package net.hwyz.iov.cloud.otd.tms.service.domain.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Date;
+
 /**
  * 运输单 VIN 明细（领域模型）
  *
@@ -41,6 +43,10 @@ public class TransportOrderDetail {
      * 装载道
      */
     private Integer loadingLine;
+    /**
+     * 交车时间（单 VIN）
+     */
+    private Date deliveryTime;
 
     /**
      * 是否锁定
@@ -76,5 +82,23 @@ public class TransportOrderDetail {
      */
     public boolean isLoadedOrOutbound() {
         return "LOADED".equals(state) || "OUTBOUND".equals(state);
+    }
+
+    /**
+     * 标记该 VIN 已交车
+     *
+     * @param now 交车时间
+     */
+    public void markDelivered(Date now) {
+        this.deliveryTime = now;
+    }
+
+    /**
+     * 是否已交车
+     *
+     * @return 已交车返回 true
+     */
+    public boolean isDelivered() {
+        return deliveryTime != null;
     }
 }

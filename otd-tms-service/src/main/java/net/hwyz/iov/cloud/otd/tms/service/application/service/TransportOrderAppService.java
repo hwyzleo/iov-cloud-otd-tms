@@ -23,6 +23,7 @@ import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.dao.Transpor
 import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.CarrierPo;
 import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.LogisticsNodePo;
 import net.hwyz.iov.cloud.otd.tms.service.infrastructure.repository.po.TransportRoutePo;
+import net.hwyz.iov.cloud.otd.wms.api.contract.event.VehicleInboundRequestedEvent;
 import net.hwyz.iov.cloud.otd.wms.api.contract.event.VehicleOutboundCancellationRequestedEvent;
 import net.hwyz.iov.cloud.otd.wms.api.contract.event.VehicleOutboundRequestedEvent;
 import org.springframework.stereotype.Service;
@@ -156,6 +157,12 @@ public class TransportOrderAppService {
         validateMasterData(command);
         LogisticsNodePo dispatchNode = logisticsNodeDao.selectPoByCode(command.dispatchLogisticsNodeCode());
         String warehouseCode = dispatchNode == null ? null : dispatchNode.getWarehouseCode();
+        LogisticsNodePo handoverNode = logisticsNodeDao.selectPoByCode(command.handoverLogisticsNodeCode());
+        if (handoverNode == null || handoverNode.getWarehouseCode() == null
+                || handoverNode.getWarehouseCode().isBlank()) {
+            throw new TmsBusinessException(TmsErrorCode.HANDOVER_WAREHOUSE_MISSING,
+                    "接车据点[" + command.handoverLogisticsNodeCode() + "]未配置仓库，不允许调度");
+        }
         String requestId = order.dispatch(command.carrierCode(), command.transportRouteCode(),
                 command.dispatchLogisticsNodeCode(), command.handoverLogisticsNodeCode(),
                 command.licensePlate(), command.idNumber(), command.estimatedLoadingTime(),
@@ -182,22 +189,76 @@ public class TransportOrderAppService {
     }
 
     /**
-     * 交车（承运商交付接车据点）
+     * 交车（承运商交付接车据点，全部未交车 VIN）
      *
      * @param orderNum     运单号
-     * @param allDelivered 是否全部交车完成
+     * @param allDelivered 是否全部交车完成（兼容旧调用）
      * @param operator     操作人
      */
     @Transactional(rollbackFor = Exception.class)
     public void handover(String orderNum, boolean allDelivered, String operator) {
+        handover(orderNum, null, allDelivered, operator);
+    }
+
+    /**
+     * 交车（承运商交付接车据点，支持按 VIN 分批交车）
+     * <p>
+     * 对本次交车且状态为 OUTBOUND 的 VIN 生产到货请求命令；已交车、非 OUTBOUND 的 VIN 不入本批次。
+     *
+     * @param orderNum     运单号
+     * @param vins         本次交车 VIN（可空，空时按 allDelivered 决定全部未交车 VIN）
+     * @param allDelivered 是否全部交车完成
+     * @param operator     操作人
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void handover(String orderNum, List<String> vins, boolean allDelivered, String operator) {
         TransportOrder order = loadOrder(orderNum);
+        String warehouseCode = resolveHandoverWarehouse(order);
         boolean firstHandover = order.getState() != TransportOrderState.HANDED_OVER;
-        order.handover(allDelivered, new Date());
+        Date now = new Date();
+
+        List<String> requested = vins == null || vins.isEmpty()
+                ? order.getDetails().stream().filter(detail -> !detail.isDelivered())
+                .map(TransportOrderDetail::getVin).toList()
+                : vins;
+        List<String> inboundVins = new ArrayList<>();
+        for (TransportOrderDetail detail : order.getDetails()) {
+            if (!requested.contains(detail.getVin())) {
+                continue;
+            }
+            boolean firstDelivery = !detail.isDelivered();
+            if (firstDelivery) {
+                detail.markDelivered(now);
+            }
+            if (firstDelivery && detail.isOutbound()) {
+                inboundVins.add(detail.getVin());
+            }
+        }
+        boolean handoverAll = order.getDetails().stream().allMatch(TransportOrderDetail::isDelivered);
+        order.handover(handoverAll, now);
+        if (!inboundVins.isEmpty()) {
+            appendInboundCommand(order, order.nextInboundRequestSeq(), inboundVins, warehouseCode);
+        }
         transportOrderRepository.save(order);
-        if (allDelivered && firstHandover) {
+        if (handoverAll && firstHandover) {
             reportAfterCommit(VSO_PREPARE_DELIVER, order,
                     () -> vsoOrderReportPort.prepareDelivery(order.getSourceOrderNo()));
         }
+    }
+
+    /**
+     * 解析接车据点映射的交付库（缺失即拒绝交车）
+     *
+     * @param order 运单
+     * @return 交付库代码
+     */
+    private String resolveHandoverWarehouse(TransportOrder order) {
+        LogisticsNodePo node = logisticsNodeDao.selectPoByCode(order.getHandoverLogisticsNodeCode());
+        if (node == null || node.getWarehouseCode() == null || node.getWarehouseCode().isBlank()) {
+            throw new TmsBusinessException(TmsErrorCode.HANDOVER_WAREHOUSE_MISSING,
+                    "接车据点[" + order.getHandoverLogisticsNodeCode() + "]未配置仓库，不允许交车");
+        }
+        return node.getWarehouseCode();
     }
 
     /**
@@ -440,6 +501,39 @@ public class TransportOrderAppService {
                 .aggregateId(order.getOrderNum())
                 .aggregateVersion((long) order.getDispatchVersion())
                 .topic(properties.getTopics().getWmsOutboundRequested())
+                .messageKey(order.getOrderNum())
+                .payload(eventPayloadSerializer.serialize(event))
+                .publishState(PUBLISH_STATE_PENDING)
+                .retryCount(0)
+                .build());
+    }
+
+    private void appendInboundCommand(TransportOrder order, int seq, List<String> vins, String warehouseCode) {
+        Instant now = TmsEventTime.now();
+        String requestId = order.getOrderNum() + "-IN-" + seq;
+        VehicleInboundRequestedEvent event = VehicleInboundRequestedEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .eventType("VehicleInboundRequested")
+                .schemaVersion(SCHEMA_VERSION)
+                .occurredAt(TmsEventTime.format(now, eventZone))
+                .producer("otd-tms")
+                .payload(VehicleInboundRequestedEvent.Payload.builder()
+                        .requestId(requestId)
+                        .sourceSystem(properties.getSourceSystem())
+                        .sourceOrderNum(order.getOrderNum())
+                        .warehouseCode(warehouseCode)
+                        .vins(vins)
+                        .estimatedArrivalTime(order.getEstimatedArrivalTime() == null ? null
+                                : TmsEventTime.format(order.getEstimatedArrivalTime().toInstant(), eventZone))
+                        .build())
+                .build();
+        outboxRepository.insert(OutboxRecord.builder()
+                .eventId(event.getEventId())
+                .eventType("VehicleInboundRequested")
+                .aggregateType(properties.getOutbox().getAggregateType())
+                .aggregateId(order.getOrderNum())
+                .aggregateVersion((long) seq)
+                .topic(properties.getTopics().getWmsInboundRequested())
                 .messageKey(order.getOrderNum())
                 .payload(eventPayloadSerializer.serialize(event))
                 .publishState(PUBLISH_STATE_PENDING)

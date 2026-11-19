@@ -92,7 +92,7 @@ class TransportOrderAppServiceTest {
         when(logisticsNodeDao.selectPoByCode("N1")).thenReturn(
                 LogisticsNodePo.builder().code("N1").enable(enabled).warehouseCode("WH-1").build());
         when(logisticsNodeDao.selectPoByCode("N2")).thenReturn(
-                LogisticsNodePo.builder().code("N2").enable(enabled).build());
+                LogisticsNodePo.builder().code("N2").enable(enabled).warehouseCode("DDC-1").build());
     }
 
     @Test
@@ -175,6 +175,50 @@ class TransportOrderAppServiceTest {
         assertThat(payload.get("vins").get(0).asText()).isEqualTo("VIN1");
 
         verify(vsoOrderReportPort).prepareTransport("SO-1");
+    }
+
+    @Test
+    @DisplayName("交车：写 WMS 到货请求（orderNum-IN-seq、交付库仓库、schemaVersion=2）并回写 VSO 600")
+    void shouldHandoverAndEmitInboundCommand() throws Exception {
+        mockMasterData(true);
+        TransportOrder handoverOrder = TransportOrder.builder()
+                .id(10L)
+                .orderNum("TO-1")
+                .sourceSystem("VSO")
+                .sourceOrderNo("SO-1")
+                .warehouseCode("WH-1")
+                .carrierCode("C1")
+                .transportRouteCode("R1")
+                .dispatchLogisticsNodeCode("N1")
+                .handoverLogisticsNodeCode("N2")
+                .state(TransportOrderState.IN_TRANSIT)
+                .dispatchVersion(1)
+                .inboundRequestSeq(0)
+                .details(new ArrayList<>(List.of(TransportOrderDetail.builder()
+                        .orderNum("TO-1").vin("VIN1").state("OUTBOUND").build())))
+                .build();
+        when(orderRepository.findByOrderNum("TO-1")).thenReturn(Optional.of(handoverOrder));
+
+        service.handover("TO-1", List.of("VIN1"), true, "运营员");
+
+        ArgumentCaptor<OutboxRecord> captor = ArgumentCaptor.forClass(OutboxRecord.class);
+        verify(outboxRepository).insert(captor.capture());
+        OutboxRecord record = captor.getValue();
+        assertThat(record.getTopic()).isEqualTo("wms.vehicle-inbound.requested");
+        assertThat(record.getMessageKey()).isEqualTo("TO-1");
+        assertThat(record.getAggregateVersion()).isEqualTo(1L);
+
+        JsonNode json = objectMapper.readTree(record.getPayload());
+        assertThat(json.get("eventType").asText()).isEqualTo("VehicleInboundRequested");
+        assertThat(json.get("schemaVersion").asInt()).isEqualTo(2);
+        assertThat(json.get("occurredAt").asText()).matches(ISO_PATTERN);
+        JsonNode payload = json.path("payload");
+        assertThat(payload.get("requestId").asText()).isEqualTo("TO-1-IN-1");
+        assertThat(payload.get("sourceOrderNum").asText()).isEqualTo("TO-1");
+        assertThat(payload.get("warehouseCode").asText()).isEqualTo("DDC-1");
+        assertThat(payload.get("vins").get(0).asText()).isEqualTo("VIN1");
+
+        verify(vsoOrderReportPort).prepareDelivery("SO-1");
     }
 
     @Test

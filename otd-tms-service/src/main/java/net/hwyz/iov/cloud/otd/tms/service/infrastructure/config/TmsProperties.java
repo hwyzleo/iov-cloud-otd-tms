@@ -81,6 +81,11 @@ public class TmsProperties {
          */
         @NotBlank
         private String wmsOutboundChangedDlq = "wms.vehicle-outbound.changed.tms.dlq";
+        /**
+         * WMS 到货请求（TMS 生产）
+         */
+        @NotBlank
+        private String wmsInboundRequested = "wms.vehicle-inbound.requested";
     }
 
     @Data
